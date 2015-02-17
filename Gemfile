@@ -39,3 +39,7 @@ gem 'spring', group: :development
 # gem 'debugger', group: [:development, :test]
 
 gem 'rb-readline', group: :development
+
+gem 'whenever'
+gem 'net-ping'
+gem 'ruby-nmap'
