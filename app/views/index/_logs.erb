@@ -1,0 +1,32 @@
+<% @logs.each do |log| %>
+    <%
+       log_class = case log.level
+                       when 0
+                           'panel-danger'
+                       when 1
+                           'panel-warning'
+                       when 2
+                           'panel-info'
+                       when 3
+                           'panel-success'
+                       when 4
+                           'panel-primary'
+                       else
+                           'panel-primary'
+                   end
+    %>
+    <div class="panel <%= log_class %>">
+        <div class="panel-heading">
+      <span class="pull-right small">
+        <%= log.created_at %>
+      </span>
+
+            <h3 class="panel-title">
+                <%= log.title.html_safe %>
+            </h3>
+        </div>
+        <div class="panel-body">
+            <%= log.message.html_safe %>
+        </div>
+    </div>
+<% end %>

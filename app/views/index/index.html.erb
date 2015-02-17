@@ -1,0 +1,34 @@
+<%= render 'header' %>
+
+<div class="row">
+    <div class="col-xs-2">
+        <div id="cpu-perc" data-cpu="<%= @sys_info.cpu %>"></div>
+    </div>
+    <div id="cpu-graph" class="col-md-6 graph" data-cpu="<%= @cpu_history.to_json %>"></div>
+</div>
+
+<div class="row">
+    <div class="col-xs-2">
+        <div id="ram-perc" data-ram="<%= @sys_info.ram %>"></div>
+    </div>
+    <div id="ram-graph" class="col-md-6 graph" data-ram="<%= @ram_history.to_json %>"></div>
+</div>
+
+<h1>Services</h1>
+<div id="service-list" class="col-md-8 row">
+    <div id="services" class="col-md-6">
+        <% @services.each do |service| %>
+            <div class="service <%= service.status ? 'service-online' : 'service-offline' %>" data-service-name="<%= service.service %>">
+                <%= service.service %>
+            </div>
+        <% end %>
+    </div>
+</div>
+
+<div class="col-md-8 row">
+    <h1>Maintenance Log</h1>
+
+    <div id="logs">
+        <%= render 'logs' %>
+    </div>
+</div>

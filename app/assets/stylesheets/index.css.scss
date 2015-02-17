@@ -1,0 +1,39 @@
+// Place all the styles related to the index controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+body {
+	padding: 20px;
+}
+
+#server-up {
+	margin-bottom: 0;
+	text-align: center;
+	font-size: 25px;
+}
+
+#service-list > div {
+	margin-bottom: 20px;
+}
+
+.service {
+	font-size: 20px;
+	margin: 1px;
+	padding: 5px 5px 5px 10px;
+	border-radius: 5px;
+}
+
+.service-online {
+	background: #2ecc71;
+}
+
+.service-offline {
+	background: #e74c3c;
+}
+
+#server-base-info p {
+	margin-bottom: 0;
+}
+
+.graph {
+	height: 190px;
+}

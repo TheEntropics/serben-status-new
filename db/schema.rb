@@ -11,36 +11,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150216154038) do
+ActiveRecord::Schema.define(version: 20150217162208) do
 
-  create_table "logs", force: true do |t|
-    t.integer  "level"
-    t.string   "title"
-    t.text     "message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+	create_table "logs", force: true do |t|
+		t.integer "level"
+		t.string "title"
+		t.text "message"
+		t.datetime "created_at"
+		t.datetime "updated_at"
+	end
 
-  create_table "pings", force: true do |t|
-    t.boolean  "up"
-    t.integer  "ping"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+	create_table "pings", force: true do |t|
+		t.boolean "up"
+		t.integer "ping"
+		t.datetime "created_at"
+		t.datetime "updated_at"
+	end
 
-  create_table "services", force: true do |t|
-    t.string   "service"
-    t.boolean  "status"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+	create_table "services", force: true do |t|
+		t.string "service"
+		t.boolean "status"
+		t.datetime "created_at"
+		t.datetime "updated_at"
+	end
 
-  create_table "sys_infos", force: true do |t|
-    t.float    "cpu"
-    t.float    "ram"
-    t.time     "uptime"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+	create_table "sys_infos", force: true do |t|
+		t.float "cpu"
+		t.float "ram"
+		t.datetime "uptime"
+		t.datetime "created_at"
+		t.datetime "updated_at"
+	end
 
 end

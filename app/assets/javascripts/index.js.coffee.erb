@@ -1,0 +1,166 @@
+$ ->
+	chart_options =
+		width: 190
+		height: 190
+		redFrom: 90
+		redTo: 100
+		yellowFrom: 75
+		yellowTo: 90
+		minorTicks: 5
+		animation:
+			duration: 1000
+
+	POLL_FREQ = 5000
+
+	class Gauge
+
+		constructor: (@name, @value, @target) ->
+			@chart = new google.visualization.Gauge(document.getElementById(@target))
+			@set_value(@value)
+
+		set_value: (value) ->
+			@value = value
+			data = google.visualization.arrayToDataTable([
+				[@name, parseFloat(value) * 100 | 0]
+			], true)
+			@chart.draw(data, chart_options)
+
+
+	class History
+
+		constructor: (@history, @target, @y_acc = 'cpu', @x_acc = 'created_at') ->
+			@append_values(@history)
+
+		update_graph: ->
+			data_graphic
+				title: ''
+				description: ''
+				data: @history
+				width: $(@target).width()
+				height: $(@target).height()
+				target: @target
+				x_accessor: @x_acc
+				y_accessor: @y_acc
+				format: 'percentage'
+				interpolate: 'linear'
+				xax_format: (d) ->
+					df = d3.time.format('%H:%M')
+					df(d)
+				show_years: false
+				xax_count: 10
+				transition_on_update: false
+
+		append_values: (values) ->
+			for d in values
+				d[@x_acc] = new Date(d[@x_acc])
+
+			@history = @history.concat(values)
+			while @history.length > <%= SysInfo::HISTORY_LIMIT %>
+					@history.shift()
+
+			@update_graph()
+
+	class Poller
+
+		constructor: (@interval, func) ->
+			@run = true
+			func()
+			@timeoutID = setInterval(func, @interval)
+
+		stop: () ->
+			@run = false
+			window.clearInterval(@timeoutID)
+
+	class Status
+		constructor: (@server_up_target = 'server-up',
+		              @uptime_target = '#uptime',
+		              @availability_target = '#availability') ->
+
+		update_status: (status, uptime, availability) ->
+			if status
+				$(@server_up_target).removeClass('alert-danger').addClass('alert-success')
+					.children('span').text('is online')
+			else
+				$(@server_up_target).removeClass('alert-success').addClass('alert-danger')
+					.children('span').text('is offline')
+
+			$(@uptime_target).text(uptime)
+			$(@availability_target).text(availability)
+
+	class Services
+		constructor: (@services_target = '#services') ->
+
+		update_services: (services) ->
+			for s in services
+				if (s['status'])
+					$(@services_target).children("[data-service-name='#{s["service"]}']")
+						.removeClass('service-offline').addClass('service-online')
+				else
+					$(@services_target).children("[data-service-name='#{s["service"]}']")
+						.removeClass('service-online').addClass('service-offline')
+
+	class Log
+		constructor: (@logs_target = '#logs') ->
+
+		append_log: (logs) ->
+			for log in logs
+				div = $("""
+				<div class="panel">
+					<div class="panel-heading">
+						<span class="pull-right small">
+							#{log["created_at"]}
+						</span>
+						<h3 class="panel-title">
+							#{log["title"]}
+						</h3>
+					</div>
+					<div class="panel-body">
+						#{log["message"]}
+					</div>
+				</div>
+				""")
+
+				if (log.level == 0)
+					div.addClass("panel-danger")
+				else if (log.level == 1)
+					div.addClass("panel-warning")
+				else if (log.level == 2)
+					div.addClass("panel-info")
+				else if (log.level == 3)
+					div.addClass("panel-success")
+				else if (log.level == 4)
+					div.addClass("panel-primary")
+				else
+					div.addClass("panel-primary")
+
+				$(@logs_target).append(div)
+
+
+	cpu_gauge = new Gauge('CPU', $('#cpu-perc').data('cpu'), 'cpu-perc')
+	ram_gauge = new Gauge('RAM', $('#ram-perc').data('ram'), 'ram-perc')
+
+	cpu_history = new History($('#cpu-graph').data('cpu'), '#cpu-graph', 'cpu')
+	ram_history = new History($('#ram-graph').data('ram'), '#ram-graph', 'ram')
+
+	status = new Status()
+	services = new Services()
+
+	logs = new Log()
+
+	poller = new Poller(POLL_FREQ, ->
+		$.getJSON(
+			'/data',
+			since: $('#server-base-info').data('last-update'),
+			(data)->
+				cpu_gauge.set_value(data['cpu'])
+				ram_gauge.set_value(data['ram'])
+				cpu_history.append_values(data['history'])
+				ram_history.append_values(data['history'])
+				status.update_status(data['server_up'], data['uptime'], data['availability'])
+				services.update_services(data['services'])
+
+				logs.append_log(data['log'])
+
+				$('#server-base-info').data('last-update', new Date())
+		)
+	)

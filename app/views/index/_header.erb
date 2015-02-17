@@ -1,0 +1,12 @@
+<div id="server-base-info" class="row" data-last-update="<%= Time.now %>">
+    <div id="server-up" class="alert <%= @status ? 'alert-success' : 'alert-danger' %> col-md-8">
+        <a href="<%= root_path %>" class="alert-link">serben.tk</a>
+        <span>is <%= @status ? 'online' : 'offline' %></span>
+    </div>
+    <p class="col-md-8">
+        <small>Uptime: <span id="uptime"><%= @uptime ? time_ago_in_words(@uptime) : 'unknown' %></span></small>
+    </p>
+    <p class="col-md-8">
+        <small>Availability: <span id="availability"><%= number_to_percentage (@availability*100) %></span></small>
+    </p>
+</div>

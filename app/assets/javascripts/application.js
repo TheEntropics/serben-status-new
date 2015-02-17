@@ -12,5 +12,9 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery.circliful
+//= require d3
+//= require google.graph
+//= require metricsgraphics
 //= require turbolinks
 //= require_tree .
