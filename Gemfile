@@ -43,3 +43,6 @@ gem 'rb-readline', group: :development
 gem 'whenever'
 gem 'net-ping'
 gem 'ruby-nmap'
+
+gem 'rack-mini-profiler'
+gem 'flamegraph'
