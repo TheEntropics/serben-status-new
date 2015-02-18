@@ -44,7 +44,7 @@ gem 'rvm1-capistrano3', require: false
 
 gem 'rb-readline', group: :development
 
-gem 'whenever'
+gem 'whenever', '~> 0.9.0'
 
 gem 'net-ping'
 gem 'ruby-nmap'

@@ -190,4 +190,4 @@ DEPENDENCIES
   turbolinks
   uglifier (>= 1.3.0)
   unicorn
-  whenever
+  whenever (~> 0.9.0)
