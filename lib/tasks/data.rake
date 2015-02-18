@@ -40,7 +40,6 @@ namespace :data do
 
 	desc 'Connect to the remote server and check its status'
 	task :check => :environment do
-		# host = '5.135.177.211'
 		ping host
 		sys_info host
 		nmap host
@@ -52,6 +51,8 @@ namespace :data do
 		t, up = time { Net::Ping::TCP.new(host).ping? }
 
 		Ping.create!(ping: t*1000, up: up)
+	rescue Exception => e
+		puts e
 	end
 
 	def sys_info(host)
@@ -62,6 +63,8 @@ namespace :data do
 			ram: s['mem']['used'].to_f / s['mem']['total'].to_f,
 			uptime: s['uptime']
 		)
+	rescue Exception => e
+		puts e
 	end
 
 	def nmap(host)
@@ -98,6 +101,8 @@ namespace :data do
 				end
 			end
 		end
+	rescue Exception => e
+		puts e
 	end
 
 	
