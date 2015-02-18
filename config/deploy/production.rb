@@ -18,7 +18,12 @@ before 'deploy:bootstrap', 'rvm1:install:gems'
 before 'deploy:bootstrap', 'app:remove_warning'
 
 before :deploy, 'app:upload_shared'
+
 after :deploy, 'db:create_user'
 after 'db:create_user', 'db:config'
-before 'deploy:migrate', 'db:setup'
 after :deploy, 'nginx:config'
+
+after :deploy, 'app:generate_secrets'
+
+before 'deploy:migrate', 'db:setup'
+

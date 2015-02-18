@@ -7,7 +7,7 @@ class IndexController < ApplicationController
 	def index
 		@sys_info = SysInfo.last
 		@status = Ping.current_status
-		@uptime = @sys_info.try(:uptime) || Time.now
+		@uptime = @sys_info.try(:uptime) || nil
 		@availability = Ping.availability
 		@logs = Log.all
 		@services = services
@@ -32,10 +32,10 @@ class IndexController < ApplicationController
 			server_up: Ping.current_status,
 			availability: number_to_percentage(Ping.availability*100),
 			services: services,
-			cpu: sys_info.cpu,
-			ram: sys_info.ram,
+			cpu: sys_info.try(:cpu, 0),
+			ram: sys_info.try(:ram, 0),
 			history: history.reverse_order.to_a,
-			uptime: sys_info.uptime ? time_ago_in_words(sys_info.uptime) : 'unknown',
+			uptime: sys_info.try(:uptime, nil) ? time_ago_in_words(sys_info.uptime) : 'unknown',
 			log: log,
 			update: Time.now
 		}
