@@ -33,7 +33,10 @@ gem 'spring', group: :development
 # gem 'unicorn'
 
 # Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
+gem 'capistrano-rails', group: :development
+gem 'capistrano-bundler', '~> 1.1.2'
+gem 'capistrano-rbenv', '~> 2.0'
+gem 'capistrano-rbenv-install', '~> 1.2.0'
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
@@ -41,6 +44,7 @@ gem 'spring', group: :development
 gem 'rb-readline', group: :development
 
 gem 'whenever'
+
 gem 'net-ping'
 gem 'ruby-nmap'
 
