@@ -25,8 +25,25 @@ namespace :app do
 	task :upload_shared do
 		on roles(:all) do
 			upload! 'config/shared/', shared_path, recursive: true
-			#execute :mv, "#{shared_path}/shared/* #{shared_path}/"
-			#execute :rmdir, "#{shared_path}/shared"
+		end
+	end
+
+	task :generate_secrets do
+		on roles(:app) do
+			within release_path do
+				# noinspection RubyArgCount
+				with rails_env: fetch(:rails_env) do
+					secret = capture(:rake, 'secret')
+					info "The production secret is '#{secret}'"
+					secrets =  "production: \n"
+					secrets += " secret_key_base: #{secret}"
+
+					execute :echo, "-e '#{secrets}' > #{release_path}/config/secrets.yml"
+
+					# execute :echo, "'production: '                  >  #{release_path}/config/secrets.yml"
+					# execute :echo, "'  secret_key_base: #{secret}'  >> #{release_path}/config/secrets.yml"
+				end
+			end
 		end
 	end
 end
@@ -61,7 +78,7 @@ namespace :db do
 		on roles(:db) do
 			as 'postgres' do
 				unless execute :createuser, "-d #{fetch :deployer}", raise_on_non_zero_exit: false
-					warn "The role #{fetch :deployer} cannot be created"
+					warn "The role '#{fetch :deployer}' cannot be created"
 				end
 			end
 		end
@@ -84,8 +101,11 @@ namespace :db do
 	task :setup do
 		on roles(:db) do
 			within release_path do
-				execute :ln, "#{shared_path}/database.yml #{release_path}/config/database.yml"
-				rake 'db:setup'
+				with rails_env: fetch(:rails_env) do
+					execute :rm, "-f #{release_path}/config/database.yml"
+					execute :ln, "#{shared_path}/database.yml #{release_path}/config/database.yml"
+					rake 'db:setup'
+				end
 			end
 		end
 	end
