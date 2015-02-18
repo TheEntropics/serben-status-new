@@ -12,3 +12,25 @@
 # used to set extended properties on the server.
 
 server 'vps.edo', user: 'deploy', roles: %w{web app db}
+
+namespace :app do
+	task :update_rvm_key do
+		on roles(:all) do
+			execute :gpg, '--keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3'
+		end
+	end
+end
+before 'rvm1:install:rvm', 'app:update_rvm_key'
+
+namespace :deploy do
+	task :install_bundler do
+		on roles(:all) do
+			gem 'bundler'
+		end
+	end
+end
+
+before 'deploy', 'rvm1:install:rvm'
+before 'deploy', 'rvm1:install:ruby'
+before 'deploy', 'rvm1:install:gems'
+# after 'rvm1:install:ruby', 'deploy:install_bundler'

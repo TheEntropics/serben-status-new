@@ -4,7 +4,7 @@ lock '3.3.5'
 set :application, 'serben-status'
 set :repo_url, 'https://github.com/edomora97/serben-status-new'
 
-set :rbenv_ruby, '2.1.3'
+set :rvm1_ruby_version, '2.1.3'
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call

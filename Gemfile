@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+ruby '2.1.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.1'
@@ -12,7 +13,7 @@ gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .js.coffee assets and views
 gem 'coffee-rails', '~> 4.0.0'
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-# gem 'therubyracer',  platforms: :ruby
+gem 'therubyracer',  platforms: :ruby
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
@@ -35,8 +36,8 @@ gem 'spring', group: :development
 # Use Capistrano for deployment
 gem 'capistrano-rails', group: :development
 gem 'capistrano-bundler', '~> 1.1.2'
-gem 'capistrano-rbenv', '~> 2.0'
-gem 'capistrano-rbenv-install', '~> 1.2.0'
+# gem 'capistrano-rvm'
+gem 'rvm1-capistrano3', require: false
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
@@ -50,3 +51,4 @@ gem 'ruby-nmap'
 
 gem 'rack-mini-profiler'
 gem 'flamegraph'
+gem 'stackprof'
