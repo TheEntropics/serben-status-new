@@ -1,17 +1,6 @@
-# Simple Role Syntax
-# ==================
-# Supports bulk-adding hosts to roles, the primary server in each group
-# is considered to be the first unless any hosts have the primary
-# property set.  Don't declare `role :all`, it's a meta role.
+set :deployer, 'deploy'
 
-
-# Extended Server Syntax
-# ======================
-# This can be used to drop a more detailed server definition into the
-# server list. The second argument is a, or duck-types, Hash and is
-# used to set extended properties on the server.
-
-server 'vps.edo', user: 'deploy', roles: %w{web app db}
+server 'vps.edo', user: fetch(:deployer), roles: %w{web app db}, primary: true
 
 namespace :app do
 	task :update_rvm_key do
@@ -29,21 +18,80 @@ namespace :app do
 	task :install_deps do
 		on roles(:app) do
 			sudo 'apt-get update'
-			sudo 'apt-get install -y nmap nginx'
+			sudo 'apt-get install -y nmap nginx postgresql postgresql-common postgresql-9.3 libpq-dev'
+		end
+	end
+
+	task :upload_shared do
+		on roles(:all) do
+			upload! 'config/shared/', shared_path, recursive: true
+			execute :mv, "#{shared_path}/shared/* #{shared_path}/"
+			execute :rmdir, "#{shared_path}/shared"
 		end
 	end
 end
 
-before 'rvm1:install:rvm', 'app:update_rvm_key'
-
-before 'deploy', 'rvm1:install:rvm'
-before 'deploy', 'rvm1:install:ruby'
-before 'deploy', 'rvm1:install:gems'
-before 'deploy', 'app:install_deps'
-before 'deploy', 'app:remove_warning'
-
-namespace :nginx do
-	task :config do
+namespace :deploy do
+	task :bootstrap do
 
 	end
 end
+
+before 'deploy:bootstrap', 'app:install_deps'
+
+before 'rvm1:install:rvm', 'app:update_rvm_key'
+
+before 'deploy:bootstrap', 'rvm1:install:rvm'
+before 'deploy:bootstrap', 'rvm1:install:ruby'
+before 'deploy:bootstrap', 'rvm1:install:gems'
+before 'deploy:bootstrap', 'app:remove_warning'
+
+namespace :nginx do
+	task :config do
+		on roles(:web) do
+			sudo :rm, '-f /etc/nginx/sites-enabled/default'
+			sudo :rm, "-f /etc/nginx/sites-enabled/#{fetch :application}"
+			sudo :ln, "-s #{shared_path}/nginx.conf /etc/nginx/sites-enabled/#{fetch :application}"
+			sudo :service, 'nginx reload'
+		end
+	end
+end
+
+namespace :db do
+	task :create_user do
+		on roles(:db) do
+			as 'postgres' do
+				unless execute :createuser, "-d #{fetch :deployer}", raise_on_non_zero_exit: false
+					warn "The role #{fetch :deployer} cannot be created"
+				end
+			end
+		end
+	end
+
+	task :config do
+		on roles(:db) do
+			as 'root' do
+				# noinspection RubyArgCount
+				v = capture(:cat, "/etc/postgresql/9.3/main/pg_hba.conf | grep \"local\\sall\\s#{fetch :deployer}\\strust\"", raise_on_non_zero_exit: false)
+				if v.empty?
+					execute :echo, "local all #{fetch :deployer} trust >> /etc/postgresql/9.3/main/pg_hba.conf"
+				else
+					warn 'DB alreay configured'
+				end
+			end
+		end
+	end
+
+	task :setup do
+		on roles(:db) do
+			within "#{fetch :deploy_to}/current" do
+				rake 'db:setup'
+			end
+		end
+	end
+end
+
+before :deploy, 'db:create_user'
+before :deploy, 'db:config'
+before :deploy, 'db:setup'
+before :deploy, 'nginx:config'

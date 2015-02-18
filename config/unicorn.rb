@@ -1,24 +1,23 @@
-listen 3000
+# Set the working application directory
+# working_directory '/path/to/your/app'
+working_directory '/var/www/serben-status/current'
 
-worker_processes Integer(ENV["WEB_CONCURRENCY"] || 3)
-timeout 15
-preload_app true
+# Unicorn PID file location
+# pid '/path/to/pids/unicorn.pid'
+pid '/var/www/serben-status/current/tmp/unicorn.pid'
 
-before_fork do |server, worker|
-	Signal.trap 'TERM' do
-		puts 'Unicorn master intercepting TERM and sending myself QUIT instead'
-		Process.kill 'QUIT', Process.pid
-	end
+# Path to logs
+# stderr_path '/path/to/log/unicorn.log'
+# stdout_path '/path/to/log/unicorn.log'
+stderr_path '/var/www/serben-status/current/log/unicorn.log'
+stdout_path '/var/www/serben-status/current/log/unicorn.log'
 
-	defined?(ActiveRecord::Base) and
-		ActiveRecord::Base.connection.disconnect!
-end
+# Unicorn socket
+listen '/tmp/unicorn.serben-status.sock'
 
-after_fork do |server, worker|
-	Signal.trap 'TERM' do
-		puts 'Unicorn worker intercepting TERM and doing nothing. Wait for master to send QUIT'
-	end
+# Number of processes
+# worker_processes 4
+worker_processes 2
 
-	defined?(ActiveRecord::Base) and
-		ActiveRecord::Base.establish_connection
-end
+# Time-out
+timeout 30
