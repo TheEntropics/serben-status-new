@@ -24,7 +24,11 @@ namespace :app do
 
 	task :upload_shared do
 		on roles(:all) do
+			puts shared_path
 			upload! 'config/shared/', shared_path, recursive: true
+			puts shared_path
+			execute :mv, "#{shared_path}/shared/* #{shared_path}/"
+			puts shared_path
 		end
 	end
 
@@ -33,15 +37,20 @@ namespace :app do
 			within release_path do
 				# noinspection RubyArgCount
 				with rails_env: fetch(:rails_env) do
-					secret = capture(:rake, 'secret')
-					info "The production secret is '#{secret}'"
+					production = capture(:rake, 'secret')
+					development = capture(:rake, 'secret')
+					test = capture(:rake, 'secret')
+					info "The production secret is '#{production}'"
+					info "The development secret is '#{development}'"
+					info "The test secret is '#{test}'"
 					secrets =  "production: \n"
-					secrets += " secret_key_base: #{secret}"
+					secrets += " secret_key_base: #{production} \n"
+					secrets += "development: \n"
+					secrets += " secret_key_base: #{development} \n"
+					secrets += "test: \n"
+					secrets += " secret_key_base: #{test} \n"
 
 					execute :echo, "-e '#{secrets}' > #{release_path}/config/secrets.yml"
-
-					# execute :echo, "'production: '                  >  #{release_path}/config/secrets.yml"
-					# execute :echo, "'  secret_key_base: #{secret}'  >> #{release_path}/config/secrets.yml"
 				end
 			end
 		end

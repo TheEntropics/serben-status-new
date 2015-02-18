@@ -20,3 +20,4 @@ public/assets
 .idea/
 
 config/database.production.yml
+config/secrets.yml
