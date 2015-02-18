@@ -50,6 +50,9 @@ class IndexController < ApplicationController
 	protected
 
 	def services
-		Service.order(:created_at).group(:service)
+		# services = Service.select(:service).group(:service)
+		# Service.order(:created_at).where(service: services)
+		data = Service.select('*, row_number() over (partition by service order by created_at desc) as row_number').to_sql
+		Service.select('*').from("(#{data}) as row").where('row_number = 1')
 	end
 end

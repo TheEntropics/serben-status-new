@@ -25,15 +25,14 @@ namespace :app do
 	task :upload_shared do
 		on roles(:all) do
 			upload! 'config/shared/', shared_path, recursive: true
-			execute :mv, "#{shared_path}/shared/* #{shared_path}/"
-			execute :rmdir, "#{shared_path}/shared"
+			#execute :mv, "#{shared_path}/shared/* #{shared_path}/"
+			#execute :rmdir, "#{shared_path}/shared"
 		end
 	end
 end
 
 namespace :deploy do
 	task :bootstrap do
-
 	end
 end
 
@@ -84,14 +83,16 @@ namespace :db do
 
 	task :setup do
 		on roles(:db) do
-			within "#{fetch :deploy_to}/current" do
+			within release_path do
+				execute :ln, "#{shared_path}/database.yml #{release_path}/config/database.yml"
 				rake 'db:setup'
 			end
 		end
 	end
 end
 
-before :deploy, 'db:create_user'
-before :deploy, 'db:config'
-before :deploy, 'db:setup'
-before :deploy, 'nginx:config'
+before :deploy, 'app:upload_shared'
+after :deploy, 'db:create_user'
+after 'db:create_user', 'db:config'
+before 'deploy:migrate', 'db:setup'
+after :deploy, 'nginx:config'
