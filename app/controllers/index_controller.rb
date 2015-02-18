@@ -7,7 +7,7 @@ class IndexController < ApplicationController
 	def index
 		@sys_info = SysInfo.last
 		@status = Ping.current_status
-		@uptime = @sys_info.try(:uptime, Time.now)
+		@uptime = @sys_info.try(:uptime) || Time.now
 		@availability = Ping.availability
 		@logs = Log.all
 		@services = services

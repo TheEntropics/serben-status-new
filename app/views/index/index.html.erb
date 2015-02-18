@@ -2,14 +2,14 @@
 
 <div class="row">
     <div class="col-xs-2">
-        <div id="cpu-perc" data-cpu="<%= @sys_info.try(:cpu, 'undefined') %>"></div>
+        <div id="cpu-perc" data-cpu="<%= @sys_info.try(:cpu) || 'undefined' %>"></div>
     </div>
     <div id="cpu-graph" class="col-md-6 graph" data-cpu="<%= @cpu_history.to_json %>"></div>
 </div>
 
 <div class="row">
     <div class="col-xs-2">
-        <div id="ram-perc" data-ram="<%= @sys_info.try(:ram, 'undefined') %>"></div>
+        <div id="ram-perc" data-ram="<%= @sys_info.try(:ram) || 'undefined' %>"></div>
     </div>
     <div id="ram-graph" class="col-md-6 graph" data-ram="<%= @ram_history.to_json %>"></div>
 </div>
