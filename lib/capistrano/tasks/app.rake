@@ -31,7 +31,6 @@ namespace :app do
 	task :generate_secrets do
 		on roles(:app) do
 			within release_path do
-				# noinspection RubyArgCount
 				with rails_env: fetch(:rails_env) do
 					production = capture(:rake, 'secret')
 					development = capture(:rake, 'secret')
