@@ -52,7 +52,9 @@ namespace :data do
 
 		Ping.create!(ping: t*1000, up: up)
 	rescue Exception => e
+		puts "Error connecting to #{host}"
 		puts e
+		Ping.create!(ping: -1, up: false)
 	end
 
 	def sys_info(host)
@@ -64,6 +66,7 @@ namespace :data do
 			uptime: s['uptime']
 		)
 	rescue Exception => e
+		puts "Error retriving sys_info!"
 		puts e
 	end
 
@@ -102,6 +105,7 @@ namespace :data do
 			end
 		end
 	rescue Exception => e
+		puts "Error while executing nmap"
 		puts e
 	end
 
