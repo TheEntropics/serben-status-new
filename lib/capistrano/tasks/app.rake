@@ -14,7 +14,7 @@ namespace :app do
 	task :install_deps do
 		on roles(:app) do
 			sudo 'apt-get update'
-			sudo 'apt-get install -y nmap nginx postgresql postgresql-common postgresql-9.3 libpq-dev'
+			sudo 'apt-get install -y nmap nginx postgresql postgresql-common postgresql-9.1 libpq-dev'
 		end
 	end
 

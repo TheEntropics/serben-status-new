@@ -2,7 +2,7 @@ namespace :db do
 	task :create_user do
 		on roles(:db) do
 			as 'postgres' do
-				unless execute :createuser, "-d #{fetch :deployer}", raise_on_non_zero_exit: false
+				unless execute :createuser, "-d -S -R #{fetch :deployer}", raise_on_non_zero_exit: false
 					warn "The role '#{fetch :deployer}' cannot be created"
 				end
 			end
@@ -12,9 +12,9 @@ namespace :db do
 	task :config do
 		on roles(:db) do
 			as 'root' do
-				v = capture(:cat, "/etc/postgresql/9.3/main/pg_hba.conf | grep \"local\\sall\\s#{fetch :deployer}\\strust\"", raise_on_non_zero_exit: false)
+				v = capture(:cat, "/etc/postgresql/9.1/main/pg_hba.conf | grep \"local\\sall\\s#{fetch :deployer}\\strust\"", raise_on_non_zero_exit: false)
 				if v.empty?
-					execute :echo, "local all #{fetch :deployer} trust >> /etc/postgresql/9.3/main/pg_hba.conf"
+					execute :echo, "local all #{fetch :deployer} trust >> /etc/postgresql/9.1/main/pg_hba.conf"
 				else
 					warn 'DB alreay configured'
 				end
