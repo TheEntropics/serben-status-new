@@ -1,0 +1,16 @@
+development:
+  adapter: postgresql
+  database: serben_status_development
+  pool: 5
+  timeout: 5000
+test:
+  adapter: postgresql
+  database: serben_status_test
+  pool: 5
+  timeout: 5000
+
+production:
+  adapter: postgresql
+  database: serben_status_production
+  pool: 5
+  timeout: 5000
